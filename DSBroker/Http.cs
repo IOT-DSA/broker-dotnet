@@ -29,11 +29,11 @@ namespace DSBroker
             Client client;
             if (queryParameters.ContainsKey("token"))
             {
-                client = Handshake.HandleHandshake(body, dsId, queryParameters["token"]);
+                client = _broker.Handshake.HandleHandshake(body, dsId, queryParameters["token"]);
             }
             else
             {
-                client = Handshake.HandleHandshake(body, dsId);
+                client = _broker.Handshake.HandleHandshake(body, dsId);
             }
 
             _broker.ClientHandler.AddPendingClient(client);

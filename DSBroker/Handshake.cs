@@ -4,8 +4,15 @@ using System.Collections.Generic;
 
 namespace DSBroker
 {
-    public static class Handshake
+    public class Handshake
     {
+        private readonly Broker _broker;
+
+        public Handshake(Broker broker)
+        {
+            _broker = broker;
+        }
+
         /// <summary>
         /// Handles an incoming HTTP post request to /conn.
         /// </summary>
@@ -13,7 +20,7 @@ namespace DSBroker
         /// <param name="dsId">DSLink identifier for connecting client.</param>
         /// <param name="token">Optional token for broker authentication.</param>
         /// <returns>Constructed client object from provided data.</returns>
-        public static Client HandleHandshake(string postedData, string dsId, string token = null)
+        public Client HandleHandshake(string postedData, string dsId, string token = null)
         {
             var jsonIn = JObject.Parse(postedData);
             var client = new Client();
@@ -111,6 +118,16 @@ namespace DSBroker
                         "json"
                     };
                 }
+
+                client.HandshakeResponse["dsId"] = _broker.DsId;
+                client.HandshakeResponse["publicKey"] = UrlBase64.Encode(_broker.KeyPair.EncodedPublicKey);
+                client.HandshakeResponse["wsUri"] = "/ws";
+                client.HandshakeResponse["httpUri"] = "/http";
+                // TODO: tempKey
+                // TODO: salt
+                // TODO: path
+                // TODO: use actual format
+                client.HandshakeResponse["format"] = "json";
 
                 client.Formats = list;
             }
