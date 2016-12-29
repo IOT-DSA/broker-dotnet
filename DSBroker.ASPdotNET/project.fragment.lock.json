@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "exports": {
+    "DSBroker/1.0.0": {
+      "type": "project",
+      "framework": ".NETFramework,Version=v4.5",
+      "compile": {
+        "bin/Debug/DSBroker.dll": {}
+      },
+      "runtime": {
+        "../packages/Newtonsoft.Json.9.0.1/lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {},
+        "bin/Debug/DSBroker.dll": {}
+      },
+      "contentFiles": {
+        "bin/Debug/DSBroker.pdb": {
+          "buildAction": "None",
+          "codeLanguage": "any",
+          "copyToOutput": true
+        }
+      }
+    }
+  }
+}
