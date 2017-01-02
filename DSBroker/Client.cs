@@ -5,6 +5,7 @@ namespace DSBroker
 {
     public class Client
     {
+        public string Name;
         public string DsId;
         public string Token;
         public string PublicKey;

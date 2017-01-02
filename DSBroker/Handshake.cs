@@ -27,6 +27,7 @@ namespace DSBroker
         {
             var jsonIn = JObject.Parse(postedData);
             var client = new Client();
+            client.Name = dsIdToName(dsId);
             client.TempKey = new KeyPair();
 
             if (string.IsNullOrEmpty(dsId))
@@ -123,16 +124,6 @@ namespace DSBroker
                     };
                 }
 
-                client.HandshakeResponse["dsId"] = _broker.DsId;
-                client.HandshakeResponse["publicKey"] = UrlBase64.Encode(_broker.KeyPair.EncodedPublicKey);
-                client.HandshakeResponse["wsUri"] = "/ws";
-                client.HandshakeResponse["httpUri"] = "/http";
-                client.HandshakeResponse["tempKey"] = UrlBase64.Encode(client.TempKey.EncodedPublicKey);
-                // TODO: salt
-                client.HandshakeResponse["salt"] = Encoding.UTF8.GetString(GenerateSalt(), 0, 32);
-                // TODO: path
-                client.HandshakeResponse["format"] = "json"; // TODO: use actual format
-
                 client.Formats = list;
             }
 
@@ -144,6 +135,20 @@ namespace DSBroker
             {
                 throw new Exception("enableWebSocketCompression was provided, but it is an invalid type.");
             }
+
+            client.Name = _broker.BrokerTree.InitDSLink(client.Name, client.DsId);
+
+            client.HandshakeResponse["dsId"] = _broker.DsId;
+            client.HandshakeResponse["publicKey"] = UrlBase64.Encode(_broker.KeyPair.EncodedPublicKey);
+            client.HandshakeResponse["wsUri"] = "/ws";
+            client.HandshakeResponse["httpUri"] = "/http";
+            client.HandshakeResponse["tempKey"] = UrlBase64.Encode(client.TempKey.EncodedPublicKey);
+            client.HandshakeResponse["salt"] = Encoding.UTF8.GetString(GenerateSalt(), 0, 32);
+            if (client.Responder)
+            {
+                client.HandshakeResponse["path"] = "/downstream/" + client.Name;
+            }
+            client.HandshakeResponse["format"] = "json"; // TODO: use actual format
 
             return client;
         }
@@ -157,15 +162,37 @@ namespace DSBroker
         {
             // TODO: Check for invalid characters
             bool validLength = 43 <= dsId.Length && dsId.Length <= 128;
-
             return validLength;
         }
 
+        /// <summary>
+        /// Generate a random 32 byte array for salt.
+        /// </summary>
+        /// <returns>Byte array of length 32.</returns>
         public static byte[] GenerateSalt()
         {
             byte[] salt = new byte[32];
             _random.NextBytes(salt);
             return salt;
+        }
+
+        /// <summary>
+        /// Strips the end of the dsId off to become a more readable name.
+        /// </summary>
+        /// <param name="dsId">Original dsId.</param>
+        /// <returns>Stripped name from long dsId.</returns>
+        private static string dsIdToName(string dsId)
+        {
+            string tmp = dsId.Substring(0, dsId.Length - 43);
+            if (tmp.EndsWith("-"))
+            {
+                tmp = tmp.Substring(0, tmp.Length - 1);
+            }
+            if (string.IsNullOrEmpty(tmp))
+            {
+                throw new ArgumentException("Invalid dsId");
+            }
+            return tmp;
         }
     }
 }

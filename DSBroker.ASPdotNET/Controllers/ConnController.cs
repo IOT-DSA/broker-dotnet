@@ -24,7 +24,12 @@ namespace DSBroker.ASPdotNET.Controllers
 
             try
             {
-                return Program.Broker.HttpHandler.PostConnEndpoint(body, queryParams);
+                var ret = Program.Broker.HttpHandler.PostConnEndpoint(body, queryParams);
+                var tree = new JObject();
+                Program.Broker.BrokerTree.SuperRoot.ToTree(tree);
+                Debug.WriteLine(tree.ToString());
+
+                return ret;
             }
             catch (Exception e)
             {

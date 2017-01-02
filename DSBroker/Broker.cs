@@ -1,4 +1,5 @@
-﻿using DSBroker.Platform;
+﻿using DSBroker.Node;
+using DSBroker.Platform;
 
 namespace DSBroker
 {
@@ -8,6 +9,7 @@ namespace DSBroker
         public readonly string DsId;
         public readonly ClientHandler ClientHandler;
         public readonly HttpHandler HttpHandler;
+        public readonly BrokerTree BrokerTree;
         public readonly Handshake Handshake;
         public readonly AbstractPlatform Platform;
 
@@ -27,6 +29,7 @@ namespace DSBroker
 
             ClientHandler = new ClientHandler();
             HttpHandler = new HttpHandler(this);
+            BrokerTree = new BrokerTree(this);
             Handshake = new Handshake(this);
         }
     }

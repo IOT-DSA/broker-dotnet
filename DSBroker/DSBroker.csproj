@@ -34,6 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Node\BrokerNode.cs" />
+    <Compile Include="Node\BrokerTree.cs" />
+    <Compile Include="Node\DownstreamNode.cs" />
+    <Compile Include="Node\DSLinkNode.cs" />
     <Compile Include="Platform\AbstractPlatform.cs" />
     <Compile Include="Broker.cs" />
     <Compile Include="Client.cs" />
