@@ -1,6 +1,23 @@
 {
   "version": 2,
   "exports": {
+    "DSBroker.Platform.NET/1.0.0": {
+      "type": "project",
+      "framework": ".NETFramework,Version=v4.5.2",
+      "compile": {
+        "bin/Debug/DSBroker.Platform.NET.dll": {}
+      },
+      "runtime": {
+        "bin/Debug/DSBroker.Platform.NET.dll": {}
+      },
+      "contentFiles": {
+        "bin/Debug/DSBroker.Platform.NET.pdb": {
+          "buildAction": "None",
+          "codeLanguage": "any",
+          "copyToOutput": true
+        }
+      }
+    },
     "DSBroker/1.0.0": {
       "type": "project",
       "framework": ".NETFramework,Version=v4.5",
@@ -9,8 +26,6 @@
       },
       "runtime": {
         "../packages/Newtonsoft.Json.9.0.1/lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {},
-        "../packages/PCLStorage.1.0.2/lib/portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac/PCLStorage.Abstractions.dll": {},
-        "../packages/PCLStorage.1.0.2/lib/portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac/PCLStorage.dll": {},
         "../packages/Portable.BouncyCastle-Signed.1.7.0.2/lib/portable-net45+dnxcore50+wp80+win+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10/crypto.dll": {},
         "bin/Debug/DSBroker.dll": {}
       },

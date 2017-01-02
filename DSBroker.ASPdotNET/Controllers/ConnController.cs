@@ -11,12 +11,6 @@ namespace DSBroker.ASPdotNET.Controllers
     [Route("conn")]
     public class ConnController : Controller
     {
-        [HttpGet]
-        public JObject Get()
-        {
-            return new JObject();
-        }
-        
         [HttpPost]
         public string Post()
         {

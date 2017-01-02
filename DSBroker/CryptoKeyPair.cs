@@ -1,13 +1,11 @@
 ﻿using System;
-using System.IO;
-using System.Threading.Tasks;
 using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
-using PCLStorage;
+using DSBroker.Platform;
 
 namespace DSBroker
 {
@@ -29,12 +27,7 @@ namespace DSBroker
         /// <summary>
         /// Location of key file to load from and save to.
         /// </summary>
-        private readonly string _location;
-
-        /// <summary>
-        /// The storage folder for the key.
-        /// </summary>
-        private readonly IFolder _folder;
+        private readonly string _path;
 
         /// <summary>
         /// BouncyCastle KeyPair.
@@ -55,15 +48,12 @@ namespace DSBroker
         }
 
         /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="T:DSLink.Crypto.KeyPair"/> class.
+        /// Creates a keypair, with specified file path.
         /// </summary>
-        /// <param name="folder">Storage folder</param>
-        /// <param name="location">Location of the key file</param>
-        public KeyPair(IFolder folder, string location)
+        /// <param name="path"></param>
+        public KeyPair(string path)
         {
-            _folder = folder;
-            _location = location;
+            _path = path;
         }
 
         /// <summary>
@@ -81,61 +71,53 @@ namespace DSBroker
         /// <summary>
         /// Load the KeyPair from the file, or generate a new one.
         /// </summary>
-        public async Task Load()
+        /// <param name="fileSystem">FileSystem implementation</param>
+        public void Load(AbstractFileSystem fileSystem)
         {
-            var res = await _folder.CheckExistsAsync(_location);
-            switch (res)
+            var exists = fileSystem.FileExists(_path);
+            if (exists)
             {
-                case ExistenceCheckResult.FileExists:
-                    var file = await _folder.GetFileAsync(_location);
-                    var reader = new StreamReader(await file.OpenAsync(FileAccess.Read));
-                    var data = reader.ReadLine();
+                var data = fileSystem.ReadFileAsString(_path);
 
-                    if (data != null)
+                if (data != null)
+                {
+                    var split = data.Split(' ');
+                    if (split.Length != 2)
                     {
-                        var split = data.Split(' ');
-                        if (split.Length != 2)
-                        {
-                            throw new FormatException("Keys file doesn't contain proper data.");
-                        }
-
-                        var ecp = GetParams();
-
-                        var q = Convert.FromBase64String(split[1]);
-                        var point = ecp.Curve.DecodePoint(q);
-                        var pubParams = new ECPublicKeyParameters(point, ecp);
-
-                        var d = new BigInteger(Convert.FromBase64String(split[0]));
-                        var privParams = new ECPrivateKeyParameters(d, ecp);
-
-                        BcKeyPair = new AsymmetricCipherKeyPair(pubParams, privParams);
+                        throw new FormatException("Keys file doesn't contain proper data.");
                     }
-                    break;
-                case ExistenceCheckResult.NotFound:
-                    var key = Generate();
-                    await Save(key);
-                    BcKeyPair = key;
-                    break;
-                default:
-                    throw new IOException("Unknown error occurred while trying to load/save crypto keypair.");
+
+                    var ecp = GetParams();
+
+                    var q = Convert.FromBase64String(split[1]);
+                    var point = ecp.Curve.DecodePoint(q);
+                    var pubParams = new ECPublicKeyParameters(point, ecp);
+
+                    var d = new BigInteger(Convert.FromBase64String(split[0]));
+                    var privParams = new ECPrivateKeyParameters(d, ecp);
+
+                    BcKeyPair = new AsymmetricCipherKeyPair(pubParams, privParams);
+                }
+            }
+            else
+            {
+                var key = Generate();
+                Save(fileSystem, key);
+                BcKeyPair = key;
             }
         }
 
         /// <summary>
         /// Save the specified KeyPair.
         /// </summary>
+        /// <param name="fileSystem">FileSystem implementation</param>
         /// <param name="keyPair">BouncyCastle Asymmetric KeyPair</param>
-        private async Task Save(AsymmetricCipherKeyPair keyPair)
+        private void Save(AbstractFileSystem fileSystem, AsymmetricCipherKeyPair keyPair)
         {
             var privateBytes = ((ECPrivateKeyParameters)keyPair.Private).D.ToByteArray();
             var publicBytes = ((ECPublicKeyParameters)keyPair.Public).Q.GetEncoded();
             var data = Convert.ToBase64String(privateBytes) + " " + Convert.ToBase64String(publicBytes);
-            var file = await _folder.CreateFileAsync(_location, CreationCollisionOption.ReplaceExisting);
-
-            using (var writer = new StreamWriter(await file.OpenAsync(FileAccess.ReadAndWrite)))
-            {
-                writer.WriteLine(data);
-            }
+            fileSystem.WriteFileFromString(_path, data);
         }
 
         /// <summary>

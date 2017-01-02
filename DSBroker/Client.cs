@@ -13,6 +13,7 @@ namespace DSBroker
         public string ReportingVersion;
         public List<string> Formats;
         public bool WebSocketCompression;
+        public KeyPair TempKey;
         public JObject HandshakeResponse = new JObject();
     }
 }

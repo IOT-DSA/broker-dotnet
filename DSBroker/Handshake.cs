@@ -1,11 +1,14 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace DSBroker
 {
     public class Handshake
     {
+        private static readonly Random _random = new Random();
+
         private readonly Broker _broker;
 
         public Handshake(Broker broker)
@@ -24,6 +27,7 @@ namespace DSBroker
         {
             var jsonIn = JObject.Parse(postedData);
             var client = new Client();
+            client.TempKey = new KeyPair();
 
             if (string.IsNullOrEmpty(dsId))
             {
@@ -123,11 +127,11 @@ namespace DSBroker
                 client.HandshakeResponse["publicKey"] = UrlBase64.Encode(_broker.KeyPair.EncodedPublicKey);
                 client.HandshakeResponse["wsUri"] = "/ws";
                 client.HandshakeResponse["httpUri"] = "/http";
-                // TODO: tempKey
+                client.HandshakeResponse["tempKey"] = UrlBase64.Encode(client.TempKey.EncodedPublicKey);
                 // TODO: salt
+                client.HandshakeResponse["salt"] = Encoding.UTF8.GetString(GenerateSalt(), 0, 32);
                 // TODO: path
-                // TODO: use actual format
-                client.HandshakeResponse["format"] = "json";
+                client.HandshakeResponse["format"] = "json"; // TODO: use actual format
 
                 client.Formats = list;
             }
@@ -155,6 +159,13 @@ namespace DSBroker
             bool validLength = 43 <= dsId.Length && dsId.Length <= 128;
 
             return validLength;
+        }
+
+        public static byte[] GenerateSalt()
+        {
+            byte[] salt = new byte[32];
+            _random.NextBytes(salt);
+            return salt;
         }
     }
 }
