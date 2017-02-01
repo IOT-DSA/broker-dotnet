@@ -1,46 +1,34 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 
-namespace DSBroker.ASPdotNET
+namespace DSBroker.ASP
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
-        }
-
-        public IConfigurationRoot Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            loggerFactory.AddConsole();
 
-            app.UseWebSockets();
-            app.Use(async (http, next) =>
+            if (env.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
+            }
+            
+            app.Use(async (http, next) => {
                 if (http.Request.Path == "/ws" && http.WebSockets.IsWebSocketRequest)
                 {
                     var webSocket = await http.WebSockets.AcceptWebSocketAsync();
@@ -59,7 +47,7 @@ namespace DSBroker.ASPdotNET
                                     var request = Encoding.UTF8.GetString(buffer.Array,
                                                                           buffer.Offset,
                                                                           buffer.Count);
-                                    await webSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+                                    await webSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes("{}")), WebSocketMessageType.Text, true, CancellationToken.None);
                                     break;
                             }
                         }
@@ -70,7 +58,6 @@ namespace DSBroker.ASPdotNET
                     await next();
                 }
             });
-
             app.UseMvc();
         }
     }

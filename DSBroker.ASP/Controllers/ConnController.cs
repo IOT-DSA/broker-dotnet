@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace DSBroker.ASPdotNET.Controllers
+namespace DSBroker.ASP.Controllers
 {
     [Route("conn")]
     public class ConnController : Controller

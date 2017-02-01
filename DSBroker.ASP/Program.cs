@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
-using NETPlatform = DSBroker.Platform.NET.Platform;
+using DSBroker.Platform.NETCore;
 
-namespace DSBroker.ASPdotNET
+namespace DSBroker.ASP
 {
     public class Program
     {
@@ -11,7 +10,7 @@ namespace DSBroker.ASPdotNET
 
         public static void Main(string[] args)
         {
-            Broker = new Broker(new NETPlatform());
+            Broker = new Broker(new NETCorePlatform());
 
             var host = new WebHostBuilder()
                 .UseKestrel()

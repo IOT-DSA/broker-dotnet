@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace DSBroker.Platform.NET
+namespace DSBroker.Platform.NETCore
 {
     public class FileSystem : AbstractFileSystem
     {
