@@ -35,7 +35,7 @@ namespace DSBroker.ASP.Controllers
             {
                 Response.StatusCode = 400;
                 Debug.WriteLine(e.StackTrace);
-                return e.Message;
+                return e.Message + "\n" + e.StackTrace;
             }
         }
     }

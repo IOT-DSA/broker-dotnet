@@ -16,5 +16,6 @@ namespace DSBroker
         public bool WebSocketCompression;
         public KeyPair TempKey;
         public JObject HandshakeResponse = new JObject();
+        public WebSocketClient WebSocketClient;
     }
 }

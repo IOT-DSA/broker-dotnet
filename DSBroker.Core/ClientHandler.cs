@@ -8,8 +8,8 @@ namespace DSBroker
     // TODO: Make thread safe.
     public class ClientHandler
     {
-        Dictionary<string, Client> ConnectedClients = new Dictionary<string, Client>();
-        Dictionary<string, ClientTimeout> PendingClients = new Dictionary<string, ClientTimeout>();
+        internal Dictionary<string, Client> ConnectedClients = new Dictionary<string, Client>();
+        internal Dictionary<string, ClientTimeout> PendingClients = new Dictionary<string, ClientTimeout>();
 
         public ClientHandler()
         {
@@ -47,7 +47,7 @@ namespace DSBroker
             ConnectedClients.Remove(client.DsId);
         }
 
-        private class ClientTimeout
+        internal class ClientTimeout
         {
             public readonly Task TimeoutTask;
             private readonly CancellationTokenSource _tokenSource;

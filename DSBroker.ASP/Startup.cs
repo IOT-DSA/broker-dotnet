@@ -6,6 +6,8 @@ using System;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
+using System.Collections.Generic;
+using Microsoft.Extensions.Primitives;
 
 namespace DSBroker.ASP
 {
@@ -29,8 +31,35 @@ namespace DSBroker.ASP
             }
             
             app.Use(async (http, next) => {
+                Console.WriteLine(http.WebSockets.IsWebSocketRequest);
                 if (http.Request.Path == "/ws" && http.WebSockets.IsWebSocketRequest)
                 {
+                    Console.WriteLine("here");
+                    var queryParams = new Dictionary<string, string>();
+
+                    foreach (KeyValuePair<string, StringValues> pair in http.Request.Query)
+                    {
+                        queryParams[pair.Key] = pair.Value.ToString();
+                    }
+
+                    // Pass query parameterrs into WebSocketHandler, and attempt to connect the client.
+                    Client client = null;
+                    try
+                    {
+                        client = Program.Broker.WebSocketHandler.HandleClient(queryParams);
+                        Console.WriteLine("here");
+                    }
+                    catch
+                    {
+                    }
+
+                    if (client == null)
+                    {
+                        var ws = await http.WebSockets.AcceptWebSocketAsync();
+                        await ws.CloseAsync(WebSocketCloseStatus.Empty, "", CancellationToken.None);
+                        return;
+                    }
+
                     var webSocket = await http.WebSockets.AcceptWebSocketAsync();
                     if (webSocket != null && webSocket.State == WebSocketState.Open)
                     {
@@ -52,6 +81,9 @@ namespace DSBroker.ASP
                             }
                         }
                     }
+
+                    // We're done with the client now.
+                    Program.Broker.ClientHandler.DisconnectClient(client);
                 }
                 else
                 {
@@ -59,6 +91,7 @@ namespace DSBroker.ASP
                 }
             });
             app.UseMvc();
+            app.UseWebSockets();
         }
     }
 }

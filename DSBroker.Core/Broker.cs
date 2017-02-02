@@ -9,6 +9,7 @@ namespace DSBroker
         public readonly string DsId;
         public readonly ClientHandler ClientHandler;
         public readonly HttpHandler HttpHandler;
+        public readonly WebSocketHandler WebSocketHandler;
         public readonly BrokerTree BrokerTree;
         public readonly Handshake Handshake;
         public readonly AbstractPlatform Platform;
@@ -29,6 +30,7 @@ namespace DSBroker
 
             ClientHandler = new ClientHandler();
             HttpHandler = new HttpHandler(this);
+            WebSocketHandler = new WebSocketHandler(this);
             BrokerTree = new BrokerTree(this);
             Handshake = new Handshake(this);
         }
