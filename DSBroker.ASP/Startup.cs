@@ -30,64 +30,17 @@ namespace DSBroker.ASP
                 app.UseDeveloperExceptionPage();
             }
             
-            app.Use(async (http, next) => {
+            /*app.Use(async (http, next) => {
                 Console.WriteLine(http.WebSockets.IsWebSocketRequest);
-                if (http.Request.Path == "/ws" && http.WebSockets.IsWebSocketRequest)
+                //if (http.Request.Path.Equals("/ws") && http.WebSockets.IsWebSocketRequest)
                 {
-                    var queryParams = new Dictionary<string, string>();
-
-                    foreach (KeyValuePair<string, StringValues> pair in http.Request.Query)
-                    {
-                        queryParams[pair.Key] = pair.Value.ToString();
-                    }
-
-                    // Pass query parameterrs into WebSocketHandler, and attempt to connect the client.
-                    Client client = null;
-                    try
-                    {
-                        client = Program.Broker.WebSocketHandler.HandleClient(queryParams);
-                    }
-                    catch
-                    {
-                        goto disconnect;
-                    }
-
-                    if (client == null)
-                    {
-                        goto disconnect;
-                    }
-
-                    var webSocket = await http.WebSockets.AcceptWebSocketAsync();
-                    if (webSocket != null && webSocket.State == WebSocketState.Open)
-                    {
-                        while (webSocket.State == WebSocketState.Open)
-                        {
-                            var token = CancellationToken.None;
-                            var buffer = new ArraySegment<byte>(new byte[4096]);
-
-                            var received = await webSocket.ReceiveAsync(buffer, token);
-
-                            switch (received.MessageType)
-                            {
-                                case WebSocketMessageType.Text:
-                                    var request = Encoding.UTF8.GetString(buffer.Array,
-                                                                          buffer.Offset,
-                                                                          buffer.Count);
-                                    await webSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes("{}")), WebSocketMessageType.Text, true, CancellationToken.None);
-                                    break;
-                            }
-                        }
-                    }
-
-                    disconnect:
-                    // We're done with the client now.
-                    Program.Broker.ClientHandler.DisconnectClient(client);
+                    
                 }
                 else
                 {
                     await next();
                 }
-            });
+            });*/
             app.UseMvc();
             app.UseWebSockets();
         }
