@@ -136,7 +136,7 @@ namespace DSBroker
                 throw new Exception("enableWebSocketCompression was provided, but it is an invalid type.");
             }
 
-            client.Name = _broker.BrokerTree.InitDSLink(client.Name, client.DsId);
+            client.Name = _broker.BrokerTree.InitDSLink(client);
 
             client.HandshakeResponse["dsId"] = _broker.DsId;
             client.HandshakeResponse["publicKey"] = UrlBase64.Encode(_broker.KeyPair.EncodedPublicKey);

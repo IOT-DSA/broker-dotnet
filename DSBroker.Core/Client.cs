@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using DSBroker.Node;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace DSBroker
@@ -14,6 +15,7 @@ namespace DSBroker
         public string ReportingVersion;
         public List<string> Formats;
         public bool WebSocketCompression;
+        public DSLinkNode Node;
         public KeyPair TempKey;
         public JObject HandshakeResponse = new JObject();
         public WebSocketClient WebSocketClient;

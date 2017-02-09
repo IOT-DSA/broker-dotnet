@@ -25,6 +25,7 @@ namespace DSBroker
             if (PendingClients.ContainsKey(client.DsId))
             {
                 PendingClients[client.DsId].CancelTimeout();
+                // TODO: Set node disconnected
                 PendingClients.Remove(client.DsId);
             }
 
@@ -52,6 +53,8 @@ namespace DSBroker
         public void DisconnectClient(Client client)
         {
             // TODO: Close out client connection.
+            
+            // TODO: Set node disconnected
 
             ConnectedClients.Remove(client.DsId);
         }

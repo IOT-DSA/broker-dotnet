@@ -13,24 +13,22 @@ namespace DSBroker.Node
         {
         }
 
-        public string CreateDSLink(string name, string dsId)
+        public string CreateDSLink(Client client)
         {
-            var node = GetChild(name);
+            var node = GetChild(client.Name);
             DSLinkNode dslink;
             if (node != null && node is DSLinkNode)
             {
                 dslink = (DSLinkNode)node;
-                if (dslink.DsId.Equals(dsId))
+                if (dslink.DsId.Equals(client.DsId))
                 {
-                    if (dslink.Client != null)
-                    {
-                        return null;
-                    }
-                    return name;
+                    return client.Name;
                 }
             }
 
-            if (node != null && HasChild(name))
+            string name = client.Name;
+
+            if (node != null && HasChild(client.Name))
             {
                 StringBuilder str = new StringBuilder(name);
                 str.Append("-");
@@ -43,8 +41,9 @@ namespace DSBroker.Node
                 name = str.ToString();
             }
 
-            dslink = new DSLinkNode(name, this);
+            dslink = new DSLinkNode(name, client.DsId, this);
             dslink.Accessible = false;
+            client.Node = dslink;
             AddChild(dslink);
 
             return name;

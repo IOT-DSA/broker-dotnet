@@ -15,9 +15,9 @@
             SuperRoot.AddChild(_downstream);
         }
 
-        public string InitDSLink(string name, string dsId)
+        public string InitDSLink(Client client)
         {
-            return _downstream.CreateDSLink(name, dsId);
+            return _downstream.CreateDSLink(client);
         }
     }
 }

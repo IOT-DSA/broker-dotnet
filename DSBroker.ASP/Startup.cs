@@ -34,7 +34,6 @@ namespace DSBroker.ASP
                 Console.WriteLine(http.WebSockets.IsWebSocketRequest);
                 if (http.Request.Path == "/ws" && http.WebSockets.IsWebSocketRequest)
                 {
-                    Console.WriteLine("here");
                     var queryParams = new Dictionary<string, string>();
 
                     foreach (KeyValuePair<string, StringValues> pair in http.Request.Query)
@@ -47,17 +46,15 @@ namespace DSBroker.ASP
                     try
                     {
                         client = Program.Broker.WebSocketHandler.HandleClient(queryParams);
-                        Console.WriteLine("here");
                     }
                     catch
                     {
+                        goto disconnect;
                     }
 
                     if (client == null)
                     {
-                        var ws = await http.WebSockets.AcceptWebSocketAsync();
-                        await ws.CloseAsync(WebSocketCloseStatus.Empty, "", CancellationToken.None);
-                        return;
+                        goto disconnect;
                     }
 
                     var webSocket = await http.WebSockets.AcceptWebSocketAsync();
@@ -82,6 +79,7 @@ namespace DSBroker.ASP
                         }
                     }
 
+                    disconnect:
                     // We're done with the client now.
                     Program.Broker.ClientHandler.DisconnectClient(client);
                 }
