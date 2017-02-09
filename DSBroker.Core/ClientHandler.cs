@@ -22,6 +22,12 @@ namespace DSBroker
                 throw new ArgumentNullException("client");
             }
 
+            if (PendingClients.ContainsKey(client.DsId))
+            {
+                PendingClients[client.DsId].CancelTimeout();
+                PendingClients.Remove(client.DsId);
+            }
+
             PendingClients.Add(client.DsId, new ClientTimeout(this, 30000, client));
         }
 
@@ -32,7 +38,10 @@ namespace DSBroker
                 throw new ArgumentNullException("client");
             }
 
-            // TODO: If another client is running, close their connection to make room for this one.
+            if (ConnectedClients.ContainsKey(client.DsId))
+            {
+                DisconnectClient(ConnectedClients[client.DsId]);
+            }
 
             PendingClients[client.DsId].CancelTimeout();
             PendingClients.Remove(client.DsId);
