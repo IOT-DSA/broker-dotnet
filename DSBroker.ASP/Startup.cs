@@ -32,24 +32,6 @@ namespace DSBroker.ASP
 
             app.UseWebSockets();
             app.UseMvc();
-
-            /*app.Use(async (http, next) => {
-                Console.WriteLine(http.WebSockets.IsWebSocketRequest);
-                //if (http.Request.Path.Equals("/ws") && http.WebSockets.IsWebSocketRequest)
-                {
-                    
-                }
-                else
-                {
-                    await next();
-                }
-            });*/
-            /*app.Use(async (http, next) =>
-            {
-                Console.WriteLine(http.WebSockets.IsWebSocketRequest);
-                next();
-            });*/
-            //app.UseMiddleware();
         }
     }
 }
