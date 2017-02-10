@@ -29,7 +29,10 @@ namespace DSBroker.ASP
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
+            app.UseWebSockets();
+            app.UseMvc();
+
             /*app.Use(async (http, next) => {
                 Console.WriteLine(http.WebSockets.IsWebSocketRequest);
                 //if (http.Request.Path.Equals("/ws") && http.WebSockets.IsWebSocketRequest)
@@ -41,8 +44,12 @@ namespace DSBroker.ASP
                     await next();
                 }
             });*/
-            app.UseMvc();
-            app.UseWebSockets();
+            /*app.Use(async (http, next) =>
+            {
+                Console.WriteLine(http.WebSockets.IsWebSocketRequest);
+                next();
+            });*/
+            //app.UseMiddleware();
         }
     }
 }

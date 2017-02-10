@@ -31,12 +31,12 @@ namespace DSBroker.ASP.Controllers
                 }
                 catch
                 {
-                    goto disconnect;
+                    return;
                 }
 
                 if (client == null)
                 {
-                    goto disconnect;
+                    return;
                 }
 
                 var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
@@ -59,11 +59,9 @@ namespace DSBroker.ASP.Controllers
                                 break;
                         }
                     }
+                    // We're done with the client now.
+                    Program.Broker.ClientHandler.DisconnectClient(client);
                 }
-
-                disconnect:
-                // We're done with the client now.
-                Program.Broker.ClientHandler.DisconnectClient(client);
             }
         }
     }

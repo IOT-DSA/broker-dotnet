@@ -32,7 +32,7 @@ namespace DSBroker
             }
 
             // TODO: Check auth!!!
-
+            
             var client = _broker.ClientHandler.PendingClients[dsId].Client;
             _broker.ClientHandler.ConnectPendingClient(client);
             var wsc = new WebSocketClient(client);

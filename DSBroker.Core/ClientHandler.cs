@@ -52,6 +52,11 @@ namespace DSBroker
 
         public void DisconnectClient(Client client)
         {
+            if (client == null)
+            {
+                throw new ArgumentNullException("client");
+            }
+
             // TODO: Close out client connection.
             
             // TODO: Set node disconnected
@@ -67,11 +72,12 @@ namespace DSBroker
 
             public ClientTimeout(ClientHandler clientHandler, int timeout, Client client)
             {
+                Client = client;
                 _tokenSource = new CancellationTokenSource();
                 TimeoutTask = Task.Delay(timeout, _tokenSource.Token);
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
-                    Task.Delay(timeout);
+                    await Task.Delay(timeout);
                     if (!_tokenSource.IsCancellationRequested)
                     {
                         clientHandler.PendingClients.Remove(client.DsId);
